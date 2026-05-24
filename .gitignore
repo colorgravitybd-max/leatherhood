@@ -1,0 +1,14 @@
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+/storage/pdf/*
+!/storage/pdf/.gitkeep
+/public/assets/uploads/*
+!/public/assets/uploads/.gitkeep
+.env
+*.log
+.DS_Store
+Thumbs.db

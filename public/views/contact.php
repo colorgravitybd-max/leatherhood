@@ -1,0 +1,1 @@
+<?php $GLOBALS['slug'] = 'contact'; require __DIR__ . '/page.php';

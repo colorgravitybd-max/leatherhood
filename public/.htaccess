@@ -1,0 +1,57 @@
+# =============================================================
+# LeatherHood — public/.htaccess (LiteSpeed/Apache)
+# =============================================================
+Options -Indexes -MultiViews +FollowSymLinks
+DirectoryIndex index.php
+
+# Force HTTPS (Hostinger handles SSL)
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Front-controller: send everything that isn't a real file/dir to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteRule ^ index.php [QSA,L]
+
+# Deny dotfiles & SQL/MD files
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+<FilesMatch "\.(sql|md|log|env)$">
+  Require all denied
+</FilesMatch>
+
+# Browser caching for static assets (LiteSpeed honours these)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp           "access plus 1 year"
+  ExpiresByType image/jpeg           "access plus 1 year"
+  ExpiresByType image/png            "access plus 1 year"
+  ExpiresByType image/svg+xml        "access plus 1 year"
+  ExpiresByType text/css             "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+  ExpiresByType font/woff2           "access plus 1 year"
+</IfModule>
+
+# Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Block PHP execution inside uploads
+<Directory "assets/uploads">
+  <FilesMatch "\.(php|phtml|php5|phar)$">
+    Require all denied
+  </FilesMatch>
+</Directory>
