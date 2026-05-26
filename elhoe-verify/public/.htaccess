@@ -1,0 +1,36 @@
+# ---- ELHOE Verify - public document root ----
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Block direct access to dotfiles
+    RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+</IfModule>
+
+# Long-cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                 "access plus 7 days"
+    ExpiresByType application/javascript   "access plus 7 days"
+    ExpiresByType image/jpeg               "access plus 30 days"
+    ExpiresByType image/png                "access plus 30 days"
+    ExpiresByType image/webp               "access plus 30 days"
+    ExpiresByType image/svg+xml            "access plus 30 days"
+</IfModule>
+
+# Block PHP execution inside uploads
+<Directory "assets/uploads">
+    php_flag engine off
+    <FilesMatch "\.(php|phtml|phar)$">
+        Require all denied
+    </FilesMatch>
+</Directory>
