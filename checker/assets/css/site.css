@@ -1,0 +1,130 @@
+/* ----- ELHOE Verify - frontend stylesheet ----- */
+/* Most layout is Tailwind utility-first via CDN. This file holds the
+   handful of bespoke effects that don't ship with Tailwind core. */
+
+:root {
+    --elhoe-cream: #faf6f1;
+    --elhoe-canvas: #f3eee7;
+    --elhoe-ink: #1a1614;
+    --elhoe-gold: #b08d57;
+    --elhoe-emerald: #047857;
+    --elhoe-crimson: #b91c1c;
+    --elhoe-amber: #b45309;
+}
+
+html, body {
+    background:
+        radial-gradient(1200px 600px at 10% -10%, #f8e9d4 0%, transparent 60%),
+        radial-gradient(900px 500px at 110% 110%, #e9e3d8 0%, transparent 55%),
+        var(--elhoe-cream);
+    color: var(--elhoe-ink);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body[lang="bn"] {
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', system-ui, sans-serif;
+}
+
+/* Glass card */
+.elhoe-glass {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 30px 60px -20px rgba(60, 40, 20, 0.15),
+        0 8px 24px -8px rgba(60, 40, 20, 0.08);
+}
+
+/* Gold hairline */
+.elhoe-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(176,141,87,0.5), transparent);
+}
+
+/* CTA button */
+.elhoe-btn {
+    background: linear-gradient(180deg, #1a1614 0%, #322a23 100%);
+    color: #faf6f1;
+    letter-spacing: 0.02em;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.elhoe-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 25px -10px rgba(0,0,0,0.4); }
+.elhoe-btn:active { transform: translateY(0); }
+.elhoe-btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+.elhoe-btn-ghost {
+    background: rgba(255,255,255,0.6);
+    color: var(--elhoe-ink);
+    border: 1px solid rgba(26,22,20,0.12);
+}
+.elhoe-btn-ghost:hover { background: rgba(255,255,255,0.85); }
+
+/* ===== Scanning laser overlay ===== */
+.elhoe-scanning {
+    position: relative;
+    overflow: hidden;
+    pointer-events: none;
+}
+.elhoe-scanning::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+        rgba(176,141,87,0) 0%,
+        rgba(176,141,87,0.18) 45%,
+        rgba(176,141,87,0.55) 50%,
+        rgba(176,141,87,0.18) 55%,
+        rgba(176,141,87,0) 100%);
+    height: 18%;
+    box-shadow: 0 0 24px 4px rgba(176,141,87,0.45);
+    animation: elhoe-laser 1.4s ease-in-out infinite;
+}
+@keyframes elhoe-laser {
+    0%   { transform: translateY(-20%); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(560%); opacity: 0; }
+}
+
+/* Result boxes */
+.elhoe-result-success {
+    background: linear-gradient(180deg, rgba(16,185,129,0.10), rgba(16,185,129,0.02));
+    border: 1px solid rgba(16,185,129,0.35);
+    box-shadow: 0 0 0 4px rgba(16,185,129,0.08), 0 18px 40px -16px rgba(4,120,87,0.25);
+}
+.elhoe-result-warning {
+    background: linear-gradient(180deg, rgba(245,158,11,0.10), rgba(245,158,11,0.03));
+    border: 1px solid rgba(245,158,11,0.45);
+}
+.elhoe-result-error {
+    background: linear-gradient(180deg, rgba(220,38,38,0.10), rgba(220,38,38,0.03));
+    border: 1px solid rgba(220,38,38,0.45);
+}
+
+/* Modal */
+.elhoe-modal-backdrop {
+    background: rgba(20, 14, 10, 0.55);
+    backdrop-filter: blur(4px);
+}
+
+/* QR scanner host */
+#qr-reader {
+    width: 100% !important;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0b0908;
+}
+#qr-reader video { border-radius: 16px; }
+#qr-reader__scan_region img { display: none; }
+
+/* Hide html5-qrcode's default UI noise - keep only the camera */
+#qr-reader__dashboard_section_swaplink,
+#qr-reader__dashboard_section_csr button:not(#qr-reader__dashboard_section_csr button:first-child) {
+    display: none !important;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .elhoe-scanning::before { animation: none; }
+}

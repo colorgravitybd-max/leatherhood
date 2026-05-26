@@ -1,0 +1,22 @@
+# ---- ELHOE Verify - admin folder ----
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Front-controller: route everything to index.php (preserve querystring)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^.*$ index.php [QSA,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "no-referrer"
+</IfModule>
+
+# Block direct PHP access to actions/views from outside the front controller.
+<FilesMatch "^(_layout_top|_layout_bottom)\.php$">
+    Require all denied
+</FilesMatch>
