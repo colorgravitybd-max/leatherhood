@@ -94,7 +94,7 @@ require __DIR__ . '/../_layout_top.php';
     <?php if (empty($products)): ?>
         <p style="color:var(--crimson)">Add an active product first.</p>
     <?php else: ?>
-    <form method="post" action="/admin/?route=codes/paste" autocomplete="off">
+    <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=codes/paste" autocomplete="off">
         <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
 
         <div class="form-grid-2">
