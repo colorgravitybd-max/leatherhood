@@ -82,6 +82,8 @@ switch ($route) {
         if ($method === 'POST') { require __DIR__ . '/actions/batch_generate.php'; }
         else                    { require __DIR__ . '/views/codes/generate.php'; }
         break;
+    case 'codes/paste':
+        require __DIR__ . '/actions/batch_paste.php'; break;
     case 'codes/export':
         require __DIR__ . '/actions/batch_export_csv.php'; break;
     case 'codes/import':

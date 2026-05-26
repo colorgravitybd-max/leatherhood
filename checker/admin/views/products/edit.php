@@ -59,10 +59,13 @@ require __DIR__ . '/../_layout_top.php';
 
         <div class="form-grid-2">
             <div class="form-row">
-                <label for="wordpress_url">WordPress product URL</label>
+                <label for="wordpress_url">WordPress product URL <span style="color:var(--muted); font-weight:400;">(optional)</span></label>
                 <input id="wordpress_url" name="wordpress_url" type="url" maxlength="255"
                        placeholder="https://elhoe.com/product/..."
                        value="<?= Helpers::e($p['wordpress_url'] ?? '') ?>">
+                <small style="color:var(--muted); font-size:11px;">
+                    If left blank, the verification page will not show a clickable product link or "Buy Again" button.
+                </small>
             </div>
             <div class="form-row">
                 <label for="is_active">Status</label>
