@@ -39,7 +39,7 @@ require __DIR__ . '/../_layout_top.php';
 ?>
 
 <div class="card">
-    <form method="get" action="<?= Helpers::e(BASE_PATH) ?>/admin/" style="display:flex; flex-wrap:wrap; gap:10px; align-items:end;">
+    <form method="get" action="." style="display:flex; flex-wrap:wrap; gap:10px; align-items:end;">
         <input type="hidden" name="route" value="logs">
         <div class="form-row" style="margin-bottom:0; min-width:170px;">
             <label>Code contains</label>

@@ -69,7 +69,7 @@ require __DIR__ . '/../_layout_top.php';
                     </td>
                     <td style="text-align:right;">
                         <a href="<?= Helpers::e(BASE_PATH) ?>/admin/?route=products/edit&id=<?= (int) $p['id'] ?>" class="btn btn-sm">Edit</a>
-                        <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=products/delete&id=<?= (int) $p['id'] ?>"
+                        <form method="post" action="?route=products/delete&id=<?= (int) $p['id'] ?>"
                               style="display:inline;">
                             <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
                             <button class="btn btn-sm btn-danger"

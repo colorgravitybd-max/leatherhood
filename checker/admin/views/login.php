@@ -19,7 +19,7 @@ $error = Helpers::flash('error');
 </head>
 <body>
 <div class="login-shell">
-    <form class="login-card" method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=login" autocomplete="off">
+    <form class="login-card" method="post" action="?route=login" autocomplete="off">
         <?php
         $logoFile = APP_ROOT . '/assets/logo.png';
         if (is_file($logoFile)):

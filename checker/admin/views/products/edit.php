@@ -13,7 +13,7 @@ $_title = $id > 0 ? 'Edit Product' : 'New Product';
 require __DIR__ . '/../_layout_top.php';
 ?>
 <div class="card" style="max-width:920px;">
-    <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=products/save" enctype="multipart/form-data" autocomplete="off">
+    <form method="post" action="?route=products/save" enctype="multipart/form-data" autocomplete="off">
         <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
         <input type="hidden" name="id" value="<?= (int) ($p['id'] ?? 0) ?>">
 

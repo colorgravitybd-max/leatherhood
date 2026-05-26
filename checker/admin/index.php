@@ -29,6 +29,13 @@ require_once dirname(__DIR__) . '/config/config.php';
 use App\Core\Auth;
 use App\Core\Helpers;
 
+// Admin pages are dynamic - never cache them anywhere (browser, Cloudflare, ISP).
+// Without this, a stale form HTML can keep posting to a wrong URL even after a
+// fix has been deployed, which is exactly what bit us on the paste-codes form.
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 Auth::start();
 
 $route = (string) ($_GET['route'] ?? 'dashboard');
@@ -98,6 +105,9 @@ switch ($route) {
 
     case 'logs':
         require __DIR__ . '/views/logs/index.php'; break;
+
+    case '_diag':
+        require __DIR__ . '/views/_diag.php'; break;
 
     default:
         http_response_code(404);

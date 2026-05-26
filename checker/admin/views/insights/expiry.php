@@ -43,7 +43,7 @@ require __DIR__ . '/../_layout_top.php';
 ?>
 
 <div class="card">
-    <form method="get" action="<?= Helpers::e(BASE_PATH) ?>/admin/" style="display:flex; gap:10px; align-items:end;">
+    <form method="get" action="." style="display:flex; gap:10px; align-items:end;">
         <input type="hidden" name="route" value="insights/expiry">
         <div class="form-row" style="margin-bottom:0;">
             <label>Horizon</label>

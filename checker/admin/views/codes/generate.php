@@ -25,7 +25,7 @@ require __DIR__ . '/../_layout_top.php';
             <a href="<?= Helpers::e(BASE_PATH) ?>/admin/?route=products/edit" class="btn btn-sm" style="margin-left:8px;">Add product</a>
         </p>
     <?php else: ?>
-    <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=codes/generate" autocomplete="off">
+    <form method="post" action="?route=codes/generate" autocomplete="off">
         <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
 
         <div class="form-grid-2">
@@ -94,7 +94,7 @@ require __DIR__ . '/../_layout_top.php';
     <?php if (empty($products)): ?>
         <p style="color:var(--crimson)">Add an active product first.</p>
     <?php else: ?>
-    <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=codes/paste" autocomplete="off">
+    <form method="post" action="?route=codes/paste" autocomplete="off">
         <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
 
         <div class="form-grid-2">
@@ -148,7 +148,7 @@ require __DIR__ . '/../_layout_top.php';
         CSV columns required: <code>code, product_id, code_type, batch_number, expiry_date</code>.
         Header row is required. Duplicate <code>code</code> values are skipped.
     </p>
-    <form method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=codes/import" enctype="multipart/form-data">
+    <form method="post" action="?route=codes/import" enctype="multipart/form-data">
         <input type="hidden" name="csrf" value="<?= Helpers::e(Helpers::csrfToken()) ?>">
         <div class="form-row">
             <input type="file" name="file" accept=".csv,text/csv" required>
