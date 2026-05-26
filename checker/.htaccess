@@ -1,0 +1,50 @@
+# =====================================================================
+#  ELHOE Verify - root .htaccess for /checker  (sits inside public_html)
+#  This applies only to the /checker subtree; WordPress's own .htaccess
+#  in public_html keeps owning the rest of the site.
+# =====================================================================
+
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Hard-block dotfiles (.env, .git*, .htaccess back-ups, etc.)
+    RewriteRule "(^|/)\." - [F]
+
+    # Hard-block private folders even if WP rules try to pass through.
+    RewriteRule ^(app|config|database)(/|$) - [F]
+</IfModule>
+
+# Belt-and-suspenders: refuse direct access to .env even without mod_rewrite.
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+</IfModule>
+
+# Long-cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                 "access plus 7 days"
+    ExpiresByType application/javascript   "access plus 7 days"
+    ExpiresByType image/jpeg               "access plus 30 days"
+    ExpiresByType image/png                "access plus 30 days"
+    ExpiresByType image/webp               "access plus 30 days"
+    ExpiresByType image/svg+xml            "access plus 30 days"
+</IfModule>
+
+# Block PHP execution inside the uploads directory.
+<Directory "assets/uploads">
+    php_flag engine off
+    <FilesMatch "\.(php|phtml|phar)$">
+        Require all denied
+    </FilesMatch>
+</Directory>
