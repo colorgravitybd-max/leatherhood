@@ -5,31 +5,44 @@ require_once __DIR__ . '/config/config.php';
 
 use App\Core\Helpers;
 
-$csrf = Helpers::csrfToken();
+$csrf      = Helpers::csrfToken();
+$logoFile  = APP_ROOT . '/assets/logo.png';
+$hasLogo   = is_file($logoFile);
+$logoUrl   = BASE_PATH . '/assets/logo.png?v=' . ($hasLogo ? filemtime($logoFile) : '1');
 ?>
 <!doctype html>
-<html lang="en" data-lang="en">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#faf6f1">
+<meta name="theme-color" content="#f3eee2">
 <meta name="base-path" content="<?= Helpers::e(BASE_PATH) ?>">
 <title>ELHOE — Authenticity Verification</title>
 <meta name="description" content="Verify the authenticity of your ELHOE luxury skincare product.">
 
-<!-- Tailwind via CDN (config inline) -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<?php if ($hasLogo): ?>
+<link rel="icon" type="image/png" href="<?= Helpers::e($logoUrl) ?>">
+<?php endif; ?>
+
+<!-- Tailwind via CDN with luxury theme tokens -->
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 <script>
   tailwind.config = {
     theme: {
       extend: {
         colors: {
-          elhoe: { cream:'#faf6f1', canvas:'#f3eee7', ink:'#1a1614', gold:'#b08d57' }
+          ivory:     '#faf6ee',
+          cream:     '#f3eee2',
+          stone:     '#e8e0d2',
+          ink:       '#1c1815',
+          gold:      '#b08d57',
+          'gold-deep': '#8a6d3f',
+          sage:      '#9eb087',
+          'sage-deep': '#7c9168',
         },
         fontFamily: {
-          sans: ['Inter','system-ui','sans-serif'],
-          serif: ['"Cormorant Garamond"','serif'],
-          bn: ['"Hind Siliguri"','"Noto Sans Bengali"','system-ui','sans-serif'],
+          sans:  ['Inter', 'system-ui', 'sans-serif'],
+          serif: ['"Cormorant Garamond"', 'serif'],
         }
       }
     }
@@ -37,199 +50,180 @@ $csrf = Helpers::csrfToken();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="<?= Helpers::e(BASE_PATH) ?>/assets/css/site.css">
 
-<!-- html5-qrcode camera scanner (~50KB gz) -->
+<!-- html5-qrcode camera scanner -->
 <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js" defer></script>
 
 <?php if (TURNSTILE_SITE_KEY !== ''): ?>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <?php endif; ?>
 </head>
-<body class="min-h-screen antialiased selection:bg-elhoe-gold/30">
+<body>
 
-<!-- ============ HEADER ============ -->
-<header class="max-w-xl mx-auto px-5 pt-6 pb-3 flex items-center justify-between">
-    <a href="<?= Helpers::e(BASE_PATH) ?>/" class="flex items-center gap-2" aria-label="ELHOE">
-        <!-- Inline minimalist logo: a thin gold ring + brand wordmark -->
-        <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="13" stroke="#b08d57" stroke-width="1.5"/>
-            <circle cx="16" cy="16" r="5" stroke="#1a1614" stroke-width="1.5"/>
-        </svg>
-        <span class="font-serif text-[1.35rem] tracking-[0.18em] text-elhoe-ink">ELHOE</span>
-    </a>
+<!-- ============================================================
+     ANIMATED BACKGROUND
+     orbs (slow-breathing gradient blobs) + drifting botanical leaves
+============================================================ -->
+<div class="bg-canvas" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-    <!-- Language toggle -->
-    <div class="inline-flex items-center text-xs font-medium bg-white/60 border border-white/80 backdrop-blur-md rounded-full p-0.5"
-         role="tablist" aria-label="Language">
-        <button data-lang="en" class="lang-btn px-3 py-1.5 rounded-full transition" aria-pressed="true">EN</button>
-        <button data-lang="bn" class="lang-btn px-3 py-1.5 rounded-full transition font-bn" aria-pressed="false">বাংলা</button>
-    </div>
-</header>
+    <!-- Leaf shape sprite. Defined once, reused via <use>. -->
+    <svg class="leaf-defs" width="0" height="0" aria-hidden="true">
+        <defs>
+            <!-- A: rounded eucalyptus leaf with center vein -->
+            <symbol id="leaf-a" viewBox="0 0 100 100">
+                <path d="M50 6 C72 18, 86 50, 50 94 C14 50, 28 18, 50 6 Z" fill="currentColor"/>
+                <path d="M50 8 L50 92" stroke="rgba(0,0,0,0.18)" stroke-width="1" fill="none"/>
+            </symbol>
+            <!-- B: slim olive leaf -->
+            <symbol id="leaf-b" viewBox="0 0 100 100">
+                <path d="M50 4 Q63 50 50 96 Q37 50 50 4 Z" fill="currentColor"/>
+            </symbol>
+            <!-- C: petal/teardrop -->
+            <symbol id="leaf-c" viewBox="0 0 100 100">
+                <path d="M50 92 C18 72, 18 28, 50 10 C82 28, 82 72, 50 92 Z" fill="currentColor"/>
+            </symbol>
+            <!-- D: pointed sage leaf -->
+            <symbol id="leaf-d" viewBox="0 0 100 100">
+                <path d="M50 5 C75 25, 75 55, 50 95 C25 55, 25 25, 50 5 Z" fill="currentColor"/>
+                <path d="M50 8 L50 92" stroke="rgba(0,0,0,0.15)" stroke-width="1" fill="none"/>
+            </symbol>
+        </defs>
+    </svg>
 
-<main class="max-w-xl mx-auto px-5 pb-16">
+    <!-- 16 leaves: varied positions, scales, shapes, durations, delays, colors.
+         Negative animation-delays mean some leaves are mid-fall on load. -->
+    <svg class="leaf" style="--x:6%;  --scale:1.0; --dur:24s; --delay:-2s;  --leaf-color:#9eb087; --max-op:0.50;"><use href="#leaf-a"/></svg>
+    <svg class="leaf" style="--x:14%; --scale:1.6; --dur:28s; --delay:-9s;  --leaf-color:#7c9168; --max-op:0.40;"><use href="#leaf-b"/></svg>
+    <svg class="leaf" style="--x:22%; --scale:0.9; --dur:20s; --delay:-15s; --leaf-color:#a8b87b; --max-op:0.55;"><use href="#leaf-c"/></svg>
+    <svg class="leaf" style="--x:30%; --scale:1.3; --dur:26s; --delay:-4s;  --leaf-color:#8a9a5b; --max-op:0.42;"><use href="#leaf-d"/></svg>
+    <svg class="leaf" style="--x:38%; --scale:1.1; --dur:22s; --delay:-18s; --leaf-color:#9eb087; --max-op:0.48;"><use href="#leaf-a"/></svg>
+    <svg class="leaf" style="--x:46%; --scale:0.8; --dur:30s; --delay:-7s;  --leaf-color:#b8c8a3; --max-op:0.52;"><use href="#leaf-b"/></svg>
+    <svg class="leaf" style="--x:54%; --scale:1.5; --dur:25s; --delay:-12s; --leaf-color:#7c9168; --max-op:0.40;"><use href="#leaf-c"/></svg>
+    <svg class="leaf" style="--x:62%; --scale:1.0; --dur:21s; --delay:-3s;  --leaf-color:#b08d57; --max-op:0.32;"><use href="#leaf-d"/></svg>
+    <svg class="leaf" style="--x:70%; --scale:1.2; --dur:27s; --delay:-20s; --leaf-color:#9eb087; --max-op:0.50;"><use href="#leaf-a"/></svg>
+    <svg class="leaf" style="--x:78%; --scale:0.9; --dur:23s; --delay:-6s;  --leaf-color:#a8b87b; --max-op:0.55;"><use href="#leaf-b"/></svg>
+    <svg class="leaf" style="--x:86%; --scale:1.4; --dur:29s; --delay:-14s; --leaf-color:#8a9a5b; --max-op:0.42;"><use href="#leaf-c"/></svg>
+    <svg class="leaf" style="--x:93%; --scale:1.0; --dur:24s; --delay:-1s;  --leaf-color:#9eb087; --max-op:0.50;"><use href="#leaf-d"/></svg>
+    <svg class="leaf" style="--x:18%; --scale:0.7; --dur:32s; --delay:-22s; --leaf-color:#d8c3a0; --max-op:0.30;"><use href="#leaf-c"/></svg>
+    <svg class="leaf" style="--x:50%; --scale:0.8; --dur:34s; --delay:-11s; --leaf-color:#b08d57; --max-op:0.28;"><use href="#leaf-b"/></svg>
+    <svg class="leaf" style="--x:74%; --scale:0.7; --dur:33s; --delay:-19s; --leaf-color:#d8c3a0; --max-op:0.30;"><use href="#leaf-a"/></svg>
+    <svg class="leaf" style="--x:34%; --scale:0.6; --dur:36s; --delay:-25s; --leaf-color:#b08d57; --max-op:0.25;"><use href="#leaf-d"/></svg>
+</div>
 
-    <!-- ============ HERO ============ -->
-    <section class="text-center mt-4 mb-6">
-        <p data-i18n="kicker"
-           class="uppercase tracking-[0.3em] text-[10px] text-elhoe-gold mb-2">Authenticity Portal</p>
-        <h1 data-i18n="title"
-            class="font-serif text-3xl sm:text-4xl text-elhoe-ink leading-tight">
-            Confirm your ELHOE is genuine.
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<main class="relative z-10 max-w-xl mx-auto px-5 py-10 sm:py-14">
+
+    <!-- Hero -->
+    <header class="text-center">
+        <?php if ($hasLogo): ?>
+            <img src="<?= Helpers::e($logoUrl) ?>" alt="ELHOE" class="brand-logo mx-auto">
+        <?php else: ?>
+            <!-- SVG fallback wordmark - shown until /checker/assets/logo.png is uploaded -->
+            <svg class="brand-logo mx-auto" viewBox="0 0 320 80" aria-label="ELHOE" role="img">
+                <text x="160" y="56" text-anchor="middle"
+                      font-family="'Cormorant Garamond', serif"
+                      font-size="56" font-weight="500"
+                      letter-spacing="14" fill="#7a6e5e">ELHOE</text>
+            </svg>
+        <?php endif; ?>
+
+        <div class="hero-divider">
+            <span class="line"></span>
+            <span class="ornament">✶</span>
+            <span class="line"></span>
+        </div>
+
+        <p class="kicker">Authenticity Assured</p>
+
+        <h1 class="hero-title">
+            Verify your <em>ELHOE</em><br>skincare ritual.
         </h1>
-        <p data-i18n="subtitle"
-           class="text-sm text-elhoe-ink/70 mt-2">
-            Enter the code printed under the seal, or scan the QR.
+
+        <p class="hero-sub">
+            Each authentic ELHOE product carries a unique authentication seal.
+            Enter the code printed beneath the seal — or scan the QR — to
+            confirm yours.
         </p>
-    </section>
+    </header>
 
-    <!-- ============ VERIFICATION CARD ============ -->
-    <section id="verify-card"
-             class="elhoe-glass rounded-3xl p-5 sm:p-7 relative">
+    <!-- Verification card -->
+    <section id="verify-card" class="verify-card mt-10">
 
-        <form id="verify-form" class="space-y-4" autocomplete="off" novalidate>
+        <form id="verify-form" autocomplete="off" novalidate>
             <input type="hidden" name="csrf" value="<?= Helpers::e($csrf) ?>">
 
-            <label for="code" class="block text-xs font-medium tracking-wide text-elhoe-ink/70"
-                   data-i18n="label_code">Verification Code</label>
+            <label for="code" class="field-label">Verification Code</label>
 
-            <div class="flex gap-2">
-                <input id="code" name="code" type="text" inputmode="text" autocapitalize="characters"
-                       spellcheck="false" required maxlength="100"
-                       data-i18n-attr="placeholder=ph_code"
+            <div class="field-row">
+                <input id="code" name="code" type="text" required maxlength="100"
+                       inputmode="text" autocapitalize="characters" spellcheck="false"
                        placeholder="ELH-XXXX-XXXX-XXXX"
-                       class="flex-1 rounded-xl border-elhoe-ink/15 bg-white/70 placeholder:text-elhoe-ink/30
-                              focus:border-elhoe-gold focus:ring-elhoe-gold/30 text-elhoe-ink tracking-wider">
+                       class="field-input">
 
-                <button type="button" id="btn-scan"
-                        class="elhoe-btn-ghost rounded-xl px-3 inline-flex items-center gap-1.5 text-sm font-medium"
-                        aria-label="Scan QR or barcode" data-i18n-attr="title=scan_btn"
-                        title="Scan QR / Barcode">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="1.8" aria-hidden="true">
-                        <path d="M3 7V5a2 2 0 0 1 2-2h2M21 7V5a2 2 0 0 0-2-2h-2M3 17v2a2 2 0 0 0 2 2h2M21 17v2a2 2 0 0 1-2 2h-2M7 12h10"/>
+                <button type="button" id="btn-scan" class="field-scan" aria-label="Scan QR code with camera">
+                    <!-- Elegant viewfinder icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 8V5a2 2 0 0 1 2-2h3"/>
+                        <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                        <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                        <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
+                        <rect x="8" y="8" width="8" height="8" rx="1.5"/>
                     </svg>
-                    <span class="hidden sm:inline" data-i18n="scan_btn">Scan</span>
+                    <span class="hidden sm:inline">Scan</span>
                 </button>
             </div>
 
             <?php if (TURNSTILE_SITE_KEY !== ''): ?>
-            <div class="cf-turnstile pt-1"
+            <div class="cf-turnstile mb-4"
                  data-sitekey="<?= Helpers::e(TURNSTILE_SITE_KEY) ?>"
                  data-theme="light" data-size="flexible"></div>
             <?php endif; ?>
 
-            <button type="submit" id="btn-verify"
-                    class="elhoe-btn w-full rounded-xl py-3 font-medium tracking-wide"
-                    data-i18n="verify_btn">
-                Verify Authenticity
+            <button type="submit" id="btn-verify" class="cta-verify">
+                <span class="cta-shine" aria-hidden="true"></span>
+                <span class="cta-text">Verify Authenticity</span>
             </button>
 
-            <p class="text-[11px] text-center text-elhoe-ink/50" data-i18n="trust_note">
-                Protected by Cloudflare. We do not store personal data.
-            </p>
+            <p class="card-trust">Protected by Cloudflare. We never store personal data.</p>
         </form>
 
-        <!-- Result region: server-rendered into here -->
-        <div id="result" class="mt-5" aria-live="polite"></div>
+        <!-- Result region -->
+        <div id="result" class="mt-6" aria-live="polite"></div>
     </section>
 
-    <!-- ============ FAQ MICRO-COPY ============ -->
-    <section class="text-center text-xs text-elhoe-ink/55 mt-8 space-y-1">
-        <p data-i18n="help_1">Can't find your code? Check beneath the scratch-off panel on the carton.</p>
-        <p data-i18n="help_2">
-            Suspect a counterfeit?
-            <a href="mailto:support@elhoe.com" class="underline decoration-elhoe-gold/50 hover:text-elhoe-ink">
-                support@elhoe.com
-            </a>
+    <!-- Help -->
+    <footer class="help">
+        <p>Can't find your code? Check beneath the scratch-off panel on the carton.</p>
+        <p>
+            Spotted a counterfeit?
+            <a href="mailto:support@elhoe.com">support@elhoe.com</a>
         </p>
-    </section>
+    </footer>
 
 </main>
 
-<!-- ============ SCANNER MODAL ============ -->
-<div id="scanner-modal" class="fixed inset-0 z-50 hidden items-center justify-center elhoe-modal-backdrop p-4"
-     role="dialog" aria-modal="true" aria-labelledby="scanner-title">
-    <div class="elhoe-glass rounded-3xl w-full max-w-md p-5 relative">
-        <div class="flex items-center justify-between mb-3">
-            <h2 id="scanner-title" class="font-serif text-xl" data-i18n="scan_title">Scan QR / Barcode</h2>
-            <button id="btn-scan-close" class="rounded-full p-2 hover:bg-black/5" aria-label="Close">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
+<!-- ============================================================
+     SCANNER MODAL
+============================================================ -->
+<div id="scanner-modal" class="scanner-modal" role="dialog" aria-modal="true" aria-labelledby="scanner-title">
+    <div class="scanner-card">
+        <div class="scanner-head">
+            <h2 id="scanner-title">Scan the QR Code</h2>
+            <button id="btn-scan-close" class="scanner-close" aria-label="Close">×</button>
         </div>
-        <div id="qr-reader" class="aspect-square"></div>
-        <p class="text-[11px] text-center text-elhoe-ink/55 mt-3" data-i18n="scan_hint">
-            Hold the QR steady inside the frame.
-        </p>
+        <div id="qr-reader"></div>
+        <p class="scanner-hint">Hold the QR steady inside the frame.</p>
     </div>
 </div>
-
-<!-- i18n strings injected for JS -->
-<script id="i18n-data" type="application/json"><?= json_encode([
-    'en' => [
-        'kicker'      => 'Authenticity Portal',
-        'title'       => 'Confirm your ELHOE is genuine.',
-        'subtitle'    => 'Enter the code printed under the seal, or scan the QR.',
-        'label_code'  => 'Verification Code',
-        'ph_code'     => 'ELH-XXXX-XXXX-XXXX',
-        'scan_btn'    => 'Scan',
-        'verify_btn'  => 'Verify Authenticity',
-        'verifying'   => 'Verifying…',
-        'trust_note'  => 'Protected by Cloudflare. We do not store personal data.',
-        'help_1'      => "Can't find your code? Check beneath the scratch-off panel on the carton.",
-        'help_2'      => 'Suspect a counterfeit?',
-        'scan_title'  => 'Scan QR / Barcode',
-        'scan_hint'   => 'Hold the QR steady inside the frame.',
-        'genuine'     => 'Authentic ELHOE Product',
-        'expires'     => 'Expires',
-        'batch'       => 'Batch',
-        'how_to_use'  => 'How to use',
-        'ingredients' => 'Ingredients',
-        'cta'         => 'Buy Again / Restock Now',
-        'reused_pre'  => 'This code is authentic but has been verified',
-        'reused_mid'  => 'times before. If you just unsealed this scratch-off panel, please contact ELHOE support immediately.',
-        'reused_times'=> 'times',
-        'fail_title'  => 'Code not recognised',
-        'fail_body'   => 'This code is invalid or may indicate a counterfeit. Please double-check your entry. If the package looks genuine, contact ELHOE support.',
-        'fail_cta'    => 'Try again',
-        'rate_title'  => 'Too many attempts',
-        'rate_body'   => 'For security, please wait a few minutes before trying again.',
-        'turnstile_required' => 'Please complete the security check.',
-    ],
-    'bn' => [
-        'kicker'      => 'অরিজিনালিটি পোর্টাল',
-        'title'       => 'আপনার এলহো পণ্যটি আসল কিনা যাচাই করুন।',
-        'subtitle'    => 'সিলের নিচে থাকা কোডটি লিখুন, অথবা QR স্ক্যান করুন।',
-        'label_code'  => 'ভেরিফিকেশন কোড',
-        'ph_code'     => 'ELH-XXXX-XXXX-XXXX',
-        'scan_btn'    => 'স্ক্যান',
-        'verify_btn'  => 'যাচাই করুন',
-        'verifying'   => 'যাচাই করা হচ্ছে…',
-        'trust_note'  => 'Cloudflare দ্বারা সুরক্ষিত। আমরা কোনো ব্যক্তিগত তথ্য সংরক্ষণ করি না।',
-        'help_1'      => 'কোড খুঁজে পাচ্ছেন না? বক্সের স্ক্র্যাচ-অফ অংশের নিচে দেখুন।',
-        'help_2'      => 'সন্দেহ হচ্ছে নকল?',
-        'scan_title'  => 'QR / বারকোড স্ক্যান',
-        'scan_hint'   => 'QR কোডটি ফ্রেমের মধ্যে স্থির রাখুন।',
-        'genuine'     => 'আসল এলহো পণ্য',
-        'expires'     => 'মেয়াদ',
-        'batch'       => 'ব্যাচ',
-        'how_to_use'  => 'ব্যবহার বিধি',
-        'ingredients' => 'উপাদান',
-        'cta'         => 'আবার অর্ডার করুন',
-        'reused_pre'  => 'এই কোডটি আসল, কিন্তু এর আগে',
-        'reused_mid'  => 'বার যাচাই করা হয়েছে। যদি আপনি এইমাত্র সিল খুলে থাকেন, অনুগ্রহ করে দ্রুত এলহো সাপোর্টে যোগাযোগ করুন।',
-        'reused_times'=> 'বার',
-        'fail_title'  => 'কোড সঠিক নয়',
-        'fail_body'   => 'এই কোডটি অবৈধ অথবা নকল পণ্যের ইঙ্গিত হতে পারে। অনুগ্রহ করে আবার দেখুন। প্যাকেজ আসল মনে হলে এলহো সাপোর্টে জানান।',
-        'fail_cta'    => 'আবার চেষ্টা',
-        'rate_title'  => 'অনেকবার চেষ্টা হয়েছে',
-        'rate_body'   => 'নিরাপত্তার জন্য কিছুক্ষণ পর আবার চেষ্টা করুন।',
-        'turnstile_required' => 'অনুগ্রহ করে সিকিউরিটি চেক সম্পন্ন করুন।',
-    ],
-], JSON_UNESCAPED_UNICODE) ?></script>
 
 <script src="<?= Helpers::e(BASE_PATH) ?>/assets/js/site.js" defer></script>
 </body>

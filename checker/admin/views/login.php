@@ -20,7 +20,16 @@ $error = Helpers::flash('error');
 <body>
 <div class="login-shell">
     <form class="login-card" method="post" action="<?= Helpers::e(BASE_PATH) ?>/admin/?route=login" autocomplete="off">
-        <h1>ELHOE</h1>
+        <?php
+        $logoFile = APP_ROOT . '/assets/logo.png';
+        if (is_file($logoFile)):
+            $logoUrl = BASE_PATH . '/assets/logo.png?v=' . filemtime($logoFile);
+        ?>
+            <img src="<?= Helpers::e($logoUrl) ?>" alt="ELHOE"
+                 style="display:block; max-height:54px; max-width:180px; margin:0 auto 8px; object-fit:contain;">
+        <?php else: ?>
+            <h1>ELHOE</h1>
+        <?php endif; ?>
         <div class="subtitle">ADMIN CONTROL CENTER</div>
 
         <?php if ($error): ?>

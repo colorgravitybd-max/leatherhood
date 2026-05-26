@@ -1,0 +1,18 @@
+UPLOAD YOUR ELHOE LOGO HERE
+============================
+
+Place your brand logo file at:
+
+    checker/assets/logo.png
+
+(PNG, JPG, or WEBP - the filename must be exactly  logo.png  for it to be picked up.
+ Transparent PNG strongly recommended so it sits cleanly on the cream background.)
+
+Where it appears once uploaded:
+  - Customer verification page (top of the hero, ~64px tall)
+  - Browser favicon
+  - Admin login screen
+
+Until you upload it, the page falls back to a clean SVG "ELHOE" wordmark in serif type.
+
+You can delete this LOGO_HERE.txt file once your logo is in place.
